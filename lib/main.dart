@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  int _counter = 0;
+  int _counter = 0; // initializes counter to 0
   bool _isDark = false;
   bool _isFirstImage = true;
 
@@ -51,6 +51,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   void _incrementCounter() {
     setState(() => _counter++);
+  }
+
+  void _decrementCounter() { //Task 1: decreasing counter
+    setState(() => _counter--);
+  }
+
+  void _resetCounter() { //Task 1: reset counter
+    setState(() => _counter = 0);
   }
 
   void _toggleTheme() {
@@ -91,9 +99,26 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 12),
+              Row( // Task 1: so that the buttons can be side by side in a 'row'
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center, //Task 1: centering buttons
+                children: [
+                  ElevatedButton(
+                    onPressed: _incrementCounter,
+                    child: const Text('Increment'),
+                  ),
+                  const SizedBox(width: 12), //Task 1: so they aren't touching
+                  ElevatedButton(
+                    // Task 1: adding decrement button but disable if not being used
+                    onPressed: _counter == 0 ? null : _decrementCounter,
+                    child: const Text('Decrement'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: _incrementCounter,
-                child: const Text('Increment'),
+                onPressed: _counter == 0 ? null : _resetCounter,
+                child: const Text('Reset'),
               ),
               const SizedBox(height: 24),
               FadeTransition(
