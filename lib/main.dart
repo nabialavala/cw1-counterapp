@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math'; //Task 1: import math so we can use max functtion in decrement by step
 
 void main() {
   runApp(const CounterImageToggleApp());
@@ -27,6 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   int _counter = 0; // initializes counter to 0
+  int _step = 1; //Task 1: initialize step to 1
   bool _isDark = false;
   bool _isFirstImage = true;
 
@@ -50,11 +52,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _incrementCounter() {
-    setState(() => _counter++);
+    setState(() => _counter+=_step);
   }
 
   void _decrementCounter() { //Task 1: decreasing counter
-    setState(() => _counter--);
+    setState(() => _counter = max(0, _counter - _step));
   }
 
   void _resetCounter() { //Task 1: reset counter
@@ -119,6 +121,30 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ElevatedButton(
                 onPressed: _counter == 0 ? null : _resetCounter,
                 child: const Text('Reset'),
+              ),
+              Text( //adding the step counter feature
+                'Step: $_step',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  ElevatedButton( //disable the button if thats the current step
+                    onPressed: _step == 1 ? null : () => setState(() => _step = 1),
+                    child: const Text('1'),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _step == 3 ? null : () => setState(() => _step = 3),
+                    child: const Text('3'),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _step == 5 ? null : () => setState(() => _step = 5),
+                    child: const Text('5'),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               FadeTransition(
