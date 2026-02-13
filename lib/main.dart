@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
+    _controller.value = 1.0; //Task 2: starts visble
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
@@ -68,11 +69,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _toggleImage() {
-    if (_isFirstImage) {
-      _controller.forward();
-    } else {
-      _controller.reverse();
-    }
     setState(() => _isFirstImage = !_isFirstImage);
   }
 
@@ -122,7 +118,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 onPressed: _counter == 0 ? null : _resetCounter,
                 child: const Text('Reset'),
               ),
-              Text( //adding the step counter feature
+              Text( //Task 1: adding the step counter feature
                 'Step: $_step',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
@@ -130,7 +126,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center, 
                 children: [
-                  ElevatedButton( //disable the button if thats the current step
+                  ElevatedButton( //Task 1: disable the button if thats the current step
                     onPressed: _step == 1 ? null : () => setState(() => _step = 1),
                     child: const Text('1'),
                   ),
@@ -147,10 +143,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ],
               ),
               const SizedBox(height: 24),
-              FadeTransition(
-                opacity: _fade,
-                child: Image.asset(
-                  _isFirstImage ? 'assets/image1.png' : 'assets/image2.png',
+              AnimatedCrossFade(
+                duration: const Duration(milliseconds: 500),
+                crossFadeState: _isFirstImage
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                firstChild: Image.asset(
+                  'assets/dog.png',
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.cover,
+                ),
+                secondChild: Image.asset(
+                  'assets/cat.png',
                   width: 180,
                   height: 180,
                   fit: BoxFit.cover,
