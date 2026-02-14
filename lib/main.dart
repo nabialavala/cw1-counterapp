@@ -5,22 +5,81 @@ void main() {
   runApp(const CounterImageToggleApp());
 }
 
-class CounterImageToggleApp extends StatelessWidget {
+class CounterImageToggleApp extends StatefulWidget {
   const CounterImageToggleApp({super.key});
+
+  @override
+  State<CounterImageToggleApp> createState() =>
+    _CounterImageToggleAppState();
+}
+
+class _CounterImageToggleAppState extends State<CounterImageToggleApp> {
+  bool _isDark = false;
+
+  void _toggleTheme() {
+    setState(() => _isDark = !_isDark);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, //remove debug banner to see theme button
       title: 'CW1 Counter & Toggle',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: const HomePage(),
+      themeMode: _isDark ? ThemeMode.dark : ThemeMode.light,
+      theme: ThemeData( //Personal: changing around colors
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.purple.shade50,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        textTheme: const TextTheme(
+          headlineMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple,
+          ),
+        ),
+      ),
+
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.dark
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      ),
+
+      home: HomePage(
+        isDark: _isDark,
+        onToggleTheme: _toggleTheme,
+      ),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool isDark;
+  final VoidCallback onToggleTheme;
+  
+  const HomePage({
+    super.key,
+    required this.isDark,
+    required this.onToggleTheme,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -29,26 +88,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   int _counter = 0; // initializes counter to 0
   int _step = 1; //Task 1: initialize step to 1
-  bool _isDark = false;
   bool _isFirstImage = true;
-
-  late final AnimationController _controller;
-  late final Animation<double> _fade;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _controller.value = 1.0; //Task 2: starts visble
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
@@ -64,29 +112,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     setState(() => _counter = 0);
   }
 
-  void _toggleTheme() {
-    setState(() => _isDark = !_isDark);
-  }
-
   void _toggleImage() {
     setState(() => _isFirstImage = !_isFirstImage);
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      themeMode: _isDark ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          title: const Text('CW1 Counter & Toggle'),
-          actions: [
-            IconButton(
-              onPressed: _toggleTheme,
-              icon: Icon(_isDark ? Icons.light_mode : Icons.dark_mode),
-            ),
-          ],
+          title: const Text('CW1 Counter & Toggle - Nabia Lavala'),
         ),
         body: Center(
           child: Column(
@@ -143,7 +177,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ],
               ),
               const SizedBox(height: 24),
-              AnimatedCrossFade(
+              AnimatedCrossFade( //Task 2: Crossfade
                 duration: const Duration(milliseconds: 500),
                 crossFadeState: _isFirstImage
                     ? CrossFadeState.showFirst
@@ -166,10 +200,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 onPressed: _toggleImage,
                 child: const Text('Toggle Image'),
               ),
+              const SizedBox(height: 12),
+              ElevatedButton( //Task 2: adding theme button that switches 
+                onPressed: widget.onToggleTheme,
+                child: Text(
+                  widget.isDark ? 'Light Mode' : 'Dark Mode',
+                ),
+              ),
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
